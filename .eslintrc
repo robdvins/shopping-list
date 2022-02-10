@@ -1,0 +1,49 @@
+{
+  "env": {
+    "es6": true,
+    "browser": true,
+    "node": true
+  },
+  "parser": "@typescript-eslint/parser",
+  "extends": [
+    "standard",
+    "plugin:import/recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:vue/vue3-recommended"
+  ],
+  "overrides": [
+    {
+      "files": ["*.vue"],
+      "parser": "vue-eslint-parser",
+      "parserOptions": {
+        "parser": "@typescript-eslint/parser"
+      },
+      "rules": {
+        "no-undef": "off"
+      }
+    }
+  ],
+  "rules": {
+    // import
+    "import/order": "error",
+    "import/first": "error",
+    "import/named": "off",
+    "import/no-unresolved": "off",
+
+    // Common
+    "space-before-function-paren": ["error", { "named": "never" }],
+
+    // TS
+    "@typescript-eslint/semi": ["error", "never"],
+    "@typescript-eslint/no-empty-function": "off",
+    "@typescript-eslint/no-explicit-any": "off",
+
+    // Vue
+    "vue/max-attributes-per-line": "off",
+    "vue/require-prop-types": "off",
+    "vue/one-component-per-file": "off",
+    "vue/require-default-prop": "off",
+    "vue/singleline-html-element-content-newline": "off",
+    "vue/html-self-closing": "off"
+  }
+}

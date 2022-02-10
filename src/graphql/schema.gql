@@ -1,0 +1,26 @@
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+type Product {
+  name: String!
+  priority: Priority
+  purchased: Boolean!
+  quantity: Int!
+  list: List
+}
+
+type List {
+  id: String!
+  name: String!
+  products: [Product] @relation
+}
+
+type Query {
+  allProducts: [Product!]
+  allLists: [List!]
+  listById(id: String!): List!
+  productByPurchasedFlag(purchased: Boolean!): [Product!]
+}
