@@ -8,7 +8,7 @@ export default defineConfig({
   resolve: {
     alias: [
       { find: '@components', replacement: resolve(__dirname, './src/components/') },
-      { find: '@graphql', replacement: resolve(__dirname, './src/graphql/') },
+      { find: '@gql', replacement: resolve(__dirname, './src/graphql/') },
       { find: '@views', replacement: resolve(__dirname, './src/views/') }
     ]
   }

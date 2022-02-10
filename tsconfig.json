@@ -11,11 +11,11 @@
     "esModuleInterop": true,
     "lib": ["ESNext", "DOM"],
     "noImplicitAny": false,
-    "baseUrl": "./src",
+    "baseUrl": "src",
     "paths": {
-      "components": ["/components"],
-      "graphql": ["/graphql"],
-      "views": ["/views"]
+      "@components/*": ["components/*"],
+      "@gql/*": ["graphql/*"],
+      "@views/*": ["views/*.vue"]
     }
   },
   "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"]

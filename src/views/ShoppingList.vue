@@ -1,16 +1,16 @@
 <script setup lang="ts">
-import GetList from '@graphql/queries/get-list.gql'
-import CreateProduct from '@graphql/mutations/new-product.gql'
+import { CREATE_PRODUCT } from '@gql/mutations'
+import { GET_LIST_BY_ID } from '@gql/queries'
 import {
+  Listbox,
+  ListboxButton,
+  ListboxOption,
+  ListboxOptions,
   Tab,
   TabGroup,
   TabList,
   TabPanel,
-  TabPanels,
-  Listbox,
-  ListboxButton,
-  ListboxOptions,
-  ListboxOption
+  TabPanels
 } from '@headlessui/vue'
 // import { SearchIcon } from '@heroicons/vue/outline'
 import { useMutation, useQuery, useResult } from '@vue/apollo-composable'
@@ -38,7 +38,7 @@ interface ShoppingList {
 
 const newTaskName = ref<string>('')
 const priority = ref<string>('')
-const { result } = useQuery<ShoppingList>(GetList, { id: props.id })
+const { result } = useQuery<ShoppingList>(GET_LIST_BY_ID, { id: props.id })
 const products = useResult(result, [], (data) => data.shopping_list.products.list)
 
 const pendingList = computed(() => {
@@ -49,7 +49,7 @@ const purchasedList = computed(() => {
   return products.value.filter((product) => product.purchased)
 })
 
-const { mutate: createProduct } = useMutation(CreateProduct, () => ({
+const { mutate: createProduct } = useMutation(CREATE_PRODUCT, () => ({
   variables: {
     name: newTaskName.value,
     priority: priority.value,
@@ -57,10 +57,10 @@ const { mutate: createProduct } = useMutation(CreateProduct, () => ({
     list_id: result.value?.shopping_list._id
   },
   update: (cache, { data: { product } }) => {
-    let data = cache.readQuery<ShoppingList>({ query: GetList, variables: { id: props.id } })
+    let data = cache.readQuery<ShoppingList>({ query: GET_LIST_BY_ID, variables: { id: props.id } })
     data = JSON.parse(JSON.stringify(data)) as ShoppingList
     data.shopping_list.products.list.push(product)
-    cache.writeQuery({ query: GetList, variables: { id: props.id }, data })
+    cache.writeQuery({ query: GET_LIST_BY_ID, variables: { id: props.id }, data })
   }
 }))
 </script>

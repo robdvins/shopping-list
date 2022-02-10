@@ -1,9 +1,9 @@
 <script setup lang="ts">
+import { CREATE_LIST } from '@gql/mutations'
 import { useMutation } from '@vue/apollo-composable'
 import { uid } from 'uid'
 import { reactive } from 'vue'
 import { useRouter } from 'vue-router'
-import { CREATE_LIST } from 'graphql/mutations'
 
 const list = reactive({
   id: '',
