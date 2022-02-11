@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { Presence, Motion } from 'motion/vue'
+import PriorityIcon from './PriorityIcon.vue'
 
 interface Product {
   product: {
@@ -45,15 +46,6 @@ const checked = ref(props.product.purchased)
         />
       </Presence>
     </label>
-    <span
-      :class="[
-        'ml-auto h-3 w-3 rounded border-2',
-        {
-          'border-red-300': product.priority === 'LOW',
-          'border-yellow-300': product.priority === 'MEDIUM',
-          'border-green-300': product.priority === 'HIGH'
-        }
-      ]"
-    ></span>
+    <PriorityIcon class="ml-auto" :priority="product.priority" />
   </li>
 </template>
