@@ -4,23 +4,38 @@ enum Priority {
   HIGH
 }
 
-type Product {
+type Product @collection(name: "products") {
   name: String!
-  priority: Priority
+  priority: Priority!
   purchased: Boolean!
-  quantity: Int!
   list: List
 }
 
-type List {
+type List @collection(name: "lists") {
   id: String!
   name: String!
-  products: [Product] @relation
+  products: [Product!] @relation
 }
 
 type Query {
-  allProducts: [Product!]
-  allLists: [List!]
   listById(id: String!): List!
-  productByPurchasedFlag(purchased: Boolean!): [Product!]
+  productsByList(lsit_id: String!): [Product!] @resolver(name: "list_by_id", paginated: true)
 }
+
+# list_by_id UDF
+# Query(
+#   Lambda(
+#     ["id", "X", "Y", "ref"],
+#     Reverse(
+#       Map(
+#         Paginate(
+#           Match(
+#             Index("list_products_by_list"),
+#             Select("ref", Get(Match(Index("list_by_id"), Var("id"))))
+#           )
+#         ),
+#         Lambda("ref", Get(Var("ref")))
+#       )
+#     )
+#   )
+# )
