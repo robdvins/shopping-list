@@ -1,51 +1,110 @@
 <script setup lang="ts">
+import {
+  DeleteProduct,
+  DeleteProductResponse,
+  ProductsByList,
+  ProductsByListResponse
+} from '@gql/interactions'
+import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'
+import { DotsVerticalIcon, TrashIcon } from '@heroicons/vue/outline'
+import { useMutation } from '@vue/apollo-composable'
+import { Motion, Presence } from 'motion/vue'
 import { ref } from 'vue'
-import { Presence, Motion } from 'motion/vue'
 import PriorityIcon from './PriorityIcon.vue'
 
 interface Product {
+  ownId: string
   product: {
+    _id: string
     name: string
     priority: 'LOW' | 'MEDIUM' | 'HIGH'
     purchased: boolean
-    quantity: number
   }
 }
 const props = defineProps<Product>()
+const emit = defineEmits({
+  deleted: () => true
+})
 
 const checked = ref(props.product.purchased)
+
+const { mutate: deleteProduct } = useMutation<DeleteProductResponse>(DeleteProduct, () => ({
+  update(cache, { data }) {
+    if (!data) return
+
+    let cached = cache.readQuery<ProductsByListResponse>({
+      query: ProductsByList,
+      variables: { list_id: props.ownId }
+    })
+    cached = JSON.parse(JSON.stringify(cached))
+    if (!cached) return
+
+    const i = cached.products.list.findIndex((item) => item._id === data.deleted._id)
+    if (i > -1) {
+      cached.products.list.splice(i, 1)
+    }
+    cache.writeQuery({ query: ProductsByList, variables: { list_id: props.ownId }, data: cached })
+  }
+}))
 </script>
 
 <template>
-  <li class="flex items-center rounded-xl bg-white p-3">
-    <input
-      :id="product.name"
-      v-model="checked"
-      :name="product.name"
-      type="checkbox"
-      class="z-10 mr-2 h-4 w-4 cursor-pointer appearance-none rounded-lg bg-gray-200 p-3 transition-colors duration-200 checked:bg-gray-800 checked:bg-[url(/check.svg)] checked:bg-center checked:bg-no-repeat checked:text-white hover:bg-gray-300 checked:hover:bg-gray-800"
-    />
-    <label
-      :for="product.name"
-      class="relative mb-1 flex cursor-pointer items-center overflow-hidden font-medium leading-none text-gray-800 transition duration-500 ease-out"
-    >
-      {{ product.name }}
-      <Presence :initial="!checked">
+  <input
+    :id="product.name"
+    v-model="checked"
+    :name="product.name"
+    type="checkbox"
+    class="z-10 mr-2 h-4 w-4 cursor-pointer appearance-none rounded-lg bg-gray-200 p-3 transition-colors duration-200 checked:bg-gray-800 checked:bg-[url(/check.svg)] checked:bg-center checked:bg-no-repeat checked:text-white hover:bg-gray-300 checked:hover:bg-gray-800"
+  />
+  <label
+    :for="product.name"
+    class="relative flex cursor-pointer items-center overflow-hidden font-medium text-gray-800 transition duration-500 ease-out"
+  >
+    {{ product.name }}
+    <Presence :initial="!checked">
+      <Motion
+        v-if="checked"
+        tag="span"
+        :initial="{ x: -250, scale: 2 }"
+        :animate="{
+          x: 0,
+          scale: 1,
+          transition: { scale: { delay: 0.3 } }
+        }"
+        :exit="{ opacity: 0 }"
+        :transition="{ easing: [0.58, 0.02, 0.4, 0.97] }"
+        class="absolute top-[13px] h-0.5 w-full rounded-full bg-gray-900"
+      />
+    </Presence>
+  </label>
+  <PriorityIcon class="ml-auto" :priority="product.priority" />
+  <Menu as="div" class="relative ml-3 inline-flex h-full">
+    <MenuButton class="rounded-md bg-gray-200 p-1">
+      <DotsVerticalIcon class="h-5 w-5" />
+    </MenuButton>
+    <MenuItems as="template">
+      <Presence>
         <Motion
-          v-if="checked"
-          tag="span"
-          :initial="{ x: -250, scale: 2 }"
-          :animate="{
-            x: 0,
-            scale: 1,
-            transition: { scale: { delay: 0.3 } }
-          }"
-          :exit="{ opacity: 0 }"
-          :transition="{ easing: [0.58, 0.02, 0.4, 0.97] }"
-          class="absolute bottom-[5px] h-0.5 w-full rounded-full bg-gray-900"
-        />
+          :initial="{ y: -3, opacity: 0 }"
+          :animate="{ y: 0, opacity: 1 }"
+          :exit="{ y: -3, opacity: 0 }"
+          :transition="{ duration: 0.3 }"
+          class="absolute -bottom-[3.25rem] -right-3 z-20 w-32 rounded-lg bg-white p-1 shadow-xl"
+        >
+          <MenuItem v-slot="{ active }">
+            <button
+              :class="[
+                'z-10 flex w-full items-center rounded p-1 text-sm text-gray-900',
+                { 'bg-gray-100': active }
+              ]"
+              @click="emit('deleted'), deleteProduct({ id: product._id })"
+            >
+              <TrashIcon class="mr-2 h-4 w-4" />
+              Delete
+            </button>
+          </MenuItem>
+        </Motion>
       </Presence>
-    </label>
-    <PriorityIcon class="ml-auto" :priority="product.priority" />
-  </li>
+    </MenuItems>
+  </Menu>
 </template>
