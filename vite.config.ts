@@ -11,5 +11,9 @@ export default defineConfig({
       { find: '@gql', replacement: resolve(__dirname, './src/graphql/') },
       { find: '@views', replacement: resolve(__dirname, './src/views/') }
     ]
+  },
+  optimizeDeps: {
+    include: ['@apollo/client/core'],
+    exclude: ['@apollo/client']
   }
 })
