@@ -58,7 +58,7 @@ async function createList() {
 </script>
 
 <template>
-  <div class="mx-auto mt-32 flex w-full max-w-md flex-col space-y-10">
+  <div class="mx-auto mt-32 flex w-full max-w-md flex-col space-y-10 px-4">
     <h1 class="text-5xl font-bold sm:text-6xl">
       <span class="bg-gradient-to-tr from-gray-200 to-gray-400 bg-clip-text text-transparent">
         A more human
