@@ -69,46 +69,46 @@ function restoreFocus() {
       v-model="newProduct.name"
       type="text"
       placeholder="Add new product"
-      maxlength="37"
-      class="w-full rounded-xl bg-transparent py-3 px-3 placeholder:text-gray-600 focus:outline-none group-focus-within:placeholder:text-gray-400"
+      maxlength="40"
+      class="w-full rounded-xl bg-transparent py-3 pl-3 pr-36 placeholder:text-gray-600 focus:outline-none group-focus-within:placeholder:text-gray-400"
       @keyup.enter="createProduct"
     />
-    <Listbox
-      v-model="newProduct.priority"
-      as="div"
-      class="relative hidden items-center transition-all duration-1000 ease-in group-focus-within:inline-flex"
+    <div
+      class="invisible absolute right-0 flex h-full items-center transition-all duration-100 ease-in group-focus-within:visible"
     >
-      <ListboxButton
-        class="mr-3 inline-flex min-w-0 items-center rounded-md bg-gray-200 py-1 px-3 text-sm capitalize transition-[width] duration-300 ease-in-out"
-      >
-        <PriorityIcon class="mr-2" :priority="newProduct.priority" />
-        {{ newProduct.priority }}
-        <ChevronDownIcon class="ml-3 h-4 w-4 text-gray-500" />
-      </ListboxButton>
-      <Presence>
-        <ListboxOptions
-          as="template"
-          class="absolute right-1.5 top-[3.25rem] w-36 space-y-1 rounded-lg bg-white p-1 shadow-xl"
+      <Listbox v-model="newProduct.priority" as="div" class="relative inline-flex items-center">
+        <ListboxButton
+          class="mr-3 inline-flex min-w-0 items-center rounded-md bg-gray-200 py-1 px-3 text-sm capitalize transition-[width] duration-300 ease-in-out"
         >
-          <Motion
-            tag="ul"
-            :initial="{ y: -20, opacity: 0 }"
-            :animate="{ y: 0, opacity: 1 }"
-            :exit="{ y: 0, opacity: 0 }"
+          <PriorityIcon class="mr-2" :priority="newProduct.priority" />
+          {{ newProduct.priority }}
+          <ChevronDownIcon class="ml-3 h-4 w-4 text-gray-500" />
+        </ListboxButton>
+        <Presence>
+          <ListboxOptions
+            as="template"
+            class="absolute right-1.5 top-[3.25rem] w-36 space-y-1 rounded-lg bg-white p-1 shadow-xl focus:outline-none"
           >
-            <ListboxOption
-              v-for="(item, i) in priorities"
-              :key="i"
-              class="flex cursor-pointer items-center rounded-md py-1 px-3 text-sm transition-colors duration-200 ease-in hover:bg-gray-100"
-              :value="item"
-              @click="restoreFocus"
+            <Motion
+              tag="ul"
+              :initial="{ y: -20, opacity: 0 }"
+              :animate="{ y: 0, opacity: 1 }"
+              :exit="{ y: 0, opacity: 0 }"
             >
-              <PriorityIcon class="mr-2" :priority="item" />
-              {{ item }}
-            </ListboxOption>
-          </Motion>
-        </ListboxOptions>
-      </Presence>
-    </Listbox>
+              <ListboxOption
+                v-for="(item, i) in priorities"
+                :key="i"
+                class="flex cursor-pointer items-center rounded-md py-1 px-3 text-sm transition-colors duration-200 ease-in hover:bg-gray-100"
+                :value="item"
+                @click="restoreFocus"
+              >
+                <PriorityIcon class="mr-2" :priority="item" />
+                {{ item }}
+              </ListboxOption>
+            </Motion>
+          </ListboxOptions>
+        </Presence>
+      </Listbox>
+    </div>
   </div>
 </template>
