@@ -73,7 +73,7 @@ const { mutate: deleteProduct } = useMutation<DeleteProductResponse>(DeleteProdu
         }"
         :exit="{ opacity: 0 }"
         :transition="{ easing: [0.58, 0.02, 0.4, 0.97] }"
-        class="absolute top-[13px] h-0.5 w-full rounded-full bg-gray-900"
+        class="absolute top-[11px] h-0.5 w-full rounded-full bg-gray-900 sm:top-[13px]"
       />
     </Presence>
   </label>
