@@ -95,3 +95,22 @@ export const DeleteProduct = gql`
     }
   }
 `
+
+export interface UpdateProductResponse {
+  updated: {
+    _id: string
+    name: string
+    priority: Priority
+    purchased: boolean
+  }
+}
+export const UpdateProduct = gql`
+  mutation UpdateProduct($id: ID!, $name: String!, $priority: Priority!, $purchased: Boolean!) {
+    updated: updateProduct(id: $id, data: { name: $name, priority: $priority, purchased: $purchased }) {
+      _id
+      name
+      priority
+      purchased
+    }
+  }
+`

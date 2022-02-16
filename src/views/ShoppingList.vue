@@ -3,13 +3,17 @@ import { ListById, ListByIdResponse, ProductsByList, ProductsByListResponse } fr
 import { useQuery, useResult } from '@vue/apollo-composable'
 import ProductInput from '@components/ProductInput.vue'
 import ProductCard from '@components/ProductCard.vue'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 
 const props = defineProps<{ id: string }>()
 
 const { result: list } = useQuery<ListByIdResponse>(ListById, { list_id: props.id })
 const productsList = useQuery<ProductsByListResponse>(ProductsByList, { list_id: props.id })
 const products = useResult(productsList.result, [], (data) => data.products.list)
+
+const unpurchased = computed(() => {
+  return products.value.filter((product) => !product.purchased)
+})
 
 // This way is the closest to the animation I was looking for.
 const moveDelay = ref('delay-100')
@@ -32,7 +36,7 @@ const moveDelay = ref('delay-100')
         class="relative space-y-3 pb-4"
       >
         <li
-          v-for="product in products"
+          v-for="product in unpurchased"
           :key="product._id"
           class="flex w-full items-center rounded-xl bg-white p-3"
         >

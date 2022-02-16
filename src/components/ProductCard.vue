@@ -3,7 +3,9 @@ import {
   DeleteProduct,
   DeleteProductResponse,
   ProductsByList,
-  ProductsByListResponse
+  ProductsByListResponse,
+  UpdateProduct,
+  UpdateProductResponse
 } from '@gql/interactions'
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'
 import { DotsVerticalIcon, TrashIcon } from '@heroicons/vue/outline'
@@ -29,6 +31,7 @@ const emit = defineEmits({
 const checked = ref(props.product.purchased)
 
 const { mutate: deleteProduct } = useMutation<DeleteProductResponse>(DeleteProduct, () => ({
+  variables: { id: props.product._id },
   update(cache, { data }) {
     if (!data) return
 
@@ -40,9 +43,31 @@ const { mutate: deleteProduct } = useMutation<DeleteProductResponse>(DeleteProdu
     if (!cached) return
 
     const i = cached.products.list.findIndex((item) => item._id === data.deleted._id)
-    if (i > -1) {
-      cached.products.list.splice(i, 1)
-    }
+    if (i < 0) return
+
+    emit('deleted')
+    cached.products.list.splice(i, 1)
+    cache.writeQuery({ query: ProductsByList, variables: { list_id: props.ownId }, data: cached })
+  }
+}))
+
+const { mutate: updateProduct } = useMutation<UpdateProductResponse>(UpdateProduct, () => ({
+  variables: { ...props.product, id: props.product._id, purchased: checked.value },
+  update(cache, { data }) {
+    if (!data) return
+
+    let cached = cache.readQuery<ProductsByListResponse>({
+      query: ProductsByList,
+      variables: { list_id: props.ownId }
+    })
+    cached = JSON.parse(JSON.stringify(cached))
+    if (!cached) return
+
+    const i = cached.products.list.findIndex((item) => item._id === data.updated._id)
+    if (i < 0) return
+
+    emit('deleted')
+    cached.products.list[i].purchased = checked.value
     cache.writeQuery({ query: ProductsByList, variables: { list_id: props.ownId }, data: cached })
   }
 }))
@@ -55,6 +80,7 @@ const { mutate: deleteProduct } = useMutation<DeleteProductResponse>(DeleteProdu
     :name="product.name"
     type="checkbox"
     class="z-10 mr-2 h-4 w-4 cursor-pointer appearance-none rounded-lg bg-gray-200 p-3 transition-colors duration-200 checked:bg-gray-800 checked:bg-[url(/check.svg)] checked:bg-center checked:bg-no-repeat checked:text-white hover:bg-gray-300 checked:hover:bg-gray-800"
+    @change="updateProduct"
   />
   <label
     :for="product.name"
@@ -97,7 +123,7 @@ const { mutate: deleteProduct } = useMutation<DeleteProductResponse>(DeleteProdu
                 'z-10 flex w-full items-center rounded p-1 text-sm text-gray-900',
                 { 'bg-gray-100': active }
               ]"
-              @click="emit('deleted'), deleteProduct({ id: product._id })"
+              @click="deleteProduct"
             >
               <TrashIcon class="mr-2 h-4 w-4" />
               Delete
